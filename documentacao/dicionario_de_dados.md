@@ -7,7 +7,7 @@ Este documento descreve a estrutura técnica e as regras de negócio de cada cam
 | Coluna | Tipo de Dado | Obrigatório? (Sim/Não) | Regra de Negócio / Padrão Esperado |
 | :--- | :--- | :--- | :--- |
 | **id_pedido** | Inteiro (INT) | Sim | Identificador único e sequencial de cada pedido realizado. Deve seguir o padrão `PED-99999`. |
-| **data_venda** | Data (YYYY-MM-DD) | Sim | Data em que a venda foi efetuada. O formato oficial padrão aceito é o internacional `AAAA-MM-DD`. |
+| **data_venda** | Data (YYYY-MM-DD) | Sim | Data em que a venda foi efetuada. O formato oficial padrão aceito é o internacional `AAAA-MM-DD`. Valores nulos, em branco ou ruídos textuais (`nd`, `N/A`) presentes na origem são filtrados e isolados em camada de quarentena/auditoria, garantindo integridade na base analítica tratada. |
 | **produto** | Texto (String) | Sim | Nome comercial do produto eletrônico da venda. |
 | **quantidade** | Inteiro (INT) | Sim | Volume de itens adquirido na transação. |
 | **valor_unitario** | Numérico (Float) | Sim | Preço de uma única unidade do produto. Deve conter apenas números e ponto decimal (Ex: `35.00`), sem o símbolo de moeda. |

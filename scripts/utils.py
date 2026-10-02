@@ -1,4 +1,6 @@
 # PADRONIZAR ID DO PEDIDO
+import pandas as pd
+
 def padronizar_digitos(id_str):
     
     id_str = str(id_str).strip() # remover espaços em branco
@@ -11,3 +13,11 @@ def padronizar_digitos(id_str):
         return f"{prefixo}-{numero_limpo}"
     
     return id_str
+
+# PADRONIZAR DATA
+def padronizar_data(serie_data):
+    
+    serie_limpa = serie_data.replace(r'^(nd|n/a|\s*)$', pd.NA, regex=True) # substituir valores inválidos por NaN
+    serie_dt = pd.to_datetime(serie_limpa, format='mixed', errors='coerce', dayfirst=True) # converter para datetime, tratando erros
+    
+    return serie_dt.dt.strftime('%Y-%m-%d')
