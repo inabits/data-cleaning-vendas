@@ -30,7 +30,7 @@ df['vendedor'] = padronizar_texto(df['vendedor'])
 
 # PADRONIZAR TIPO DE CANAL DE VENDAS
 df['canal_venda'] = padronizar_texto(df['canal_venda'])
-mapeamento = {
+mapa_canal_venda = {
     'ONLINE': 'ONLINE',
     'LOJA FISICA': 'LOJA FÍSICA',
     'LOJA F�SICA': 'LOJA FÍSICA',
@@ -39,7 +39,21 @@ mapeamento = {
     'TELEVENDAS': 'TELEVENDAS',
     'REVENDEDOR': 'REVENDEDOR'
 }
-df['canal_venda'] = df['canal_venda'].map(mapeamento).fillna(df['canal_venda'])
+df['canal_venda'] = df['canal_venda'].map(mapa_canal_venda).fillna(df['canal_venda'])
+
+# PADRONIZAR STATUS DO PEDIDO
+df['status'] = padronizar_texto(df['status'])
+mapa_status = {
+    'CONCLUIDO': 'CONCLUÍDO',
+    'CONCLU�DO': 'CONCLUÍDO',
+    'CONCLUÍDO': 'CONCLUÍDO',
+    'CANCELADO': 'CANCELADO',
+    'PENDENTE': 'PENDENTE',
+    'EM ANÁLISE': 'EM ANÁLISE',
+    'EM AN�LISE': 'EM ANÁLISE',
+    'EM ANALISE': 'EM ANÁLISE'
+}
+df['status'] = df['status'].map(mapa_status).fillna(df['status'])
 
 # SALVAR DADOS LIMPOS
 df.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False)
