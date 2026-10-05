@@ -25,5 +25,8 @@ df['desconto'] = padronizar_desconto(df['desconto'])
 # PADRONIZAÇÃO DE NOME DE REGIÃO
 df['regiao'] = padronizar_texto(df['regiao'])
 
+# PADRONIZAR NOME DO VENDEDOR
+df['vendedor'] = padronizar_texto(df['vendedor'])   
+
 # SALVAR DADOS LIMPOS
 df.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False)
