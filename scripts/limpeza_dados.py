@@ -1,5 +1,5 @@
 import pandas as pd
-from utils import padronizar_digitos, padronizar_data, padronizar_texto, padronizar_quantidade, padronizar_valor_unitario
+from utils import padronizar_digitos, padronizar_data, padronizar_texto, padronizar_quantidade, padronizar_valor_unitario, padronizar_desconto
 
 # CARREGAR DADOS BRUTOS
 df = pd.read_csv('dados_brutos/dados_brutos_vendas.csv', sep=';', encoding='latin-1')
@@ -19,7 +19,8 @@ df['quantidade'] = padronizar_quantidade(df['quantidade'])
 # PADRONIZAÇÃO DE VALOR UNITÁRIO
 df['valor_unitario'] = padronizar_valor_unitario(df['valor_unitario'])
 
-print(df['valor_unitario'].head(50)) 
+# PADRONIZAÇÃO DE DESCONTO
+df['desconto'] = padronizar_desconto(df['desconto'])
 
 # SALVAR DADOS LIMPOS
 df.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False)

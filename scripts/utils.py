@@ -71,3 +71,28 @@ def padronizar_valor_unitario(serie_valor):
     
     return serie_num.astype(float)
     
+# PADRONIZAR DESCONTO
+def padronizar_desconto(serie_desconto):
+    
+    s = serie_desconto.astype(str).str.strip() # converter para string para manipulação de dados
+    s = s.replace(r'^(-|N/A|n/a|ND|\s*|nan|None)$', '0', regex=True) # substituir variações de nulo, texto inválido ou vazio por pd.NA
+    tem_porcentagem = s.str.contains('%', regex=False).fillna(False) # identificar se o valor contém o símbolo de porcentagem
+    s_limpa = s.str.replace('%', '', regex=False).str.strip() # remover o símbolo de porcentagem e espaços em branco
+    serie_num = pd.to_numeric(s_limpa, errors='coerce').fillna(0.0) # converter para numérico (lida com floats e converte falhas em NaN)
+    
+    # Função auxiliar para aplicar a escala correta
+    def aplicar_escala(val, tem_pct):
+        
+        if val == 0.0:
+            return 0.0
+        if tem_pct:
+            return val / 100.0
+        else:
+            # se vieram números altos sem '%', normalizamos para a escala 0 a 1 
+            if val > 1.0:
+                return val / 10000.0 if val > 100 else val / 100.0
+            return val
+
+    serie_final = [aplicar_escala(v, p) for v, p in zip(serie_num, tem_porcentagem)]
+    
+    return pd.Series(serie_final, index=serie_desconto.index, dtype=float)
