@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # PADRONIZAR ID DO PEDIDO
 def padronizar_digitos(id_str):
@@ -43,3 +44,30 @@ def padronizar_quantidade(serie_quantidade):
     serie_num = serie_num.where(serie_num > 0, pd.NA) # regra de negócio: quantidades <= 0 (zeros e o erro -1) tornam-se pd.NA (vão para quarentena)
 
     return serie_num.astype('Int64')
+
+# PADRONIZAR VALOR UNITÁRIO
+def padronizar_valor_unitario(serie_valor):
+    
+    s = serie_valor.astype(str).str.strip() # converter para string para manipulação de dados
+    s = s.replace(r'^(-|N/D|n/d|ND|\s*|nan|None)$', pd.NA, regex=True) # substituir variações de nulo, texto inválido ou vazio por pd.NA
+    s = s.str.replace(r'R\$\s?', '', case=False, regex=True) # remover prefixo monetário 'R$' se houver
+    s = s.mask(s.str.contains(r'%|\(', regex=True).fillna(False), pd.NA) # remover valores com porcentagem ou parênteses (ex: '10%', '(10)') e substituir por pd.NA
+
+    # normalizar separadores decimais e de milhar
+    def limpar_formato(val):
+        
+        if pd.isna(val):
+            return np.nan
+        val_str = str(val)
+        if '.' in val_str and ',' in val_str:
+            val_str = val_str.replace('.', '').replace(',', '.')
+        elif ',' in val_str:
+            val_str = val_str.replace(',', '.')
+        return val_str
+    
+    s_limpa = s.apply(limpar_formato)
+    serie_num = pd.to_numeric(s_limpa, errors='coerce') # converter para numérico (lida com floats e converte falhas em NaN)
+    serie_num = serie_num.where(serie_num > 0, pd.NA) # regra de negócio: valores <= 0 tornam-se pd.NA (vão para quarentena)
+    
+    return serie_num.astype(float)
+    
