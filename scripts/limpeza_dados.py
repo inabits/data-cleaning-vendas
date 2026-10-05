@@ -22,5 +22,8 @@ df['valor_unitario'] = padronizar_valor_unitario(df['valor_unitario'])
 # PADRONIZAÇÃO DE DESCONTO
 df['desconto'] = padronizar_desconto(df['desconto'])
 
+# PADRONIZAÇÃO DE NOME DE REGIÃO
+df['regiao'] = padronizar_texto(df['regiao'])
+
 # SALVAR DADOS LIMPOS
 df.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False)
