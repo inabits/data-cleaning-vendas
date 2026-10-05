@@ -26,8 +26,9 @@ def padronizar_data(serie_data):
 # PADRONIZAR TEXTO
 def padronizar_texto(serie_texto):
     
+    serie_texto = serie_texto.astype(str).str.strip() # converter para string e remover espaços em branco
     serie_limpa = serie_texto.replace(r'^\s*$', pd.NA, regex=True) # substituir valores inválidos por NaN
-    
+
     return (
         serie_limpa.str.strip()
         .str.replace(r'\s+', ' ', regex=True)
