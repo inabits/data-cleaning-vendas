@@ -55,5 +55,39 @@ mapa_status = {
 }
 df['status'] = df['status'].map(mapa_status).fillna(df['status'])
 
-# SALVAR DADOS LIMPOS
-df.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False)
+### 
+
+# definindo as regras críticas de falha (campos obrigatórios que não podem ser nulos)
+falha_data = df['data_venda'].isna() | (df['data_venda'].astype(str).str.strip() == '')
+falha_quantidade = df['quantidade'].isna()
+falha_preco = df['valor_unitario'].isna()
+
+# máscara de quarentena (se falhar em qualquer regra crítica)
+mascara_quarentena = falha_data | falha_quantidade | falha_preco
+
+# criando os DataFrames separados
+df_quarentena = df[mascara_quarentena].copy()
+df_tratado = df[~mascara_quarentena].copy()
+
+# adicionando a coluna descritiva com o motivo da rejeição na Quarentena
+def identificar_motivos(row):
+    motivos = []
+    if pd.isna(row['data_venda']) or str(row['data_venda']).strip() == '':
+        motivos.append('Data ausente ou inválida')
+    if pd.isna(row['quantidade']):
+        motivos.append('Quantidade ausente ou <= 0')
+    if pd.isna(row['valor_unitario']):
+        motivos.append('Valor unitário ausente ou inválido')
+    return ' | '.join(motivos)
+
+df_quarentena['motivo_quarentena'] = df_quarentena.apply(identificar_motivos, axis=1)
+
+# salvando os arquivos finais 
+df_tratado.to_csv('dados_tratados/dados_tratados_vendas.csv', index=False, encoding='utf-8-sig')
+df_quarentena.to_csv('dados_tratados/quarentena.csv', index=False, encoding='utf-8-sig')
+df_tratado.head(50).to_csv('dados_tratados/dados_tratados_vendas_50.csv', index=False, encoding='utf-8-sig')
+df_quarentena.head(50).to_csv('dados_tratados/quarentena_50.csv', index=False, encoding='utf-8-sig')
+
+print("Pipeline executado com sucesso!")
+print(f"-> Registros validos (Analytics): {len(df_tratado)}")
+print(f"-> Registros em Quarentena (Auditoria): {len(df_quarentena)}")
